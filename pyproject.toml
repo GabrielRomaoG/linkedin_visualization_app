@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "linkedin-visualization-app"
+version = "0.1.0"
+description = ""
+authors = ["Gabriel Romão <gabriel-rgomes@hotmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "3.11"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
