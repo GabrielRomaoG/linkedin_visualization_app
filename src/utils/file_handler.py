@@ -11,3 +11,10 @@ def extract_files_from_zip(file_path: str, destine_path: str, files_to_extract: 
 def get_file_name_from_path(file_path: str):
     file_name = file_path.split("/")[-1]
     return file_name
+
+
+def compare_file_names(file_name, interest_file_name):
+    if file_name != interest_file_name:
+        raise ValueError(
+            f"File name '{file_name}' does not match the interest file name '{interest_file_name}'"
+        )
