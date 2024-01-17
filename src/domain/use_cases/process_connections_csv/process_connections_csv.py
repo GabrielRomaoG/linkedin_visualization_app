@@ -14,6 +14,7 @@ class ConnectionsCsvProcessor:
         ]
 
     def process(self, file_path: str):
+        self.__validate_file_name(file_path, self.__expected_csv_file)
         connections_df = self.__read_connections_csv(file_path)
         self.__validate_columns(connections_df)
         connections_df = connections_df[self.__interest_columns]
@@ -26,8 +27,8 @@ class ConnectionsCsvProcessor:
         connections_df = connections_df.drop(columns=["URL"])
         return connections_df
 
+    @classmethod
     def __read_connections_csv(self, file_path: str):
-        self.__validate_file_name(file_path, self.__expected_csv_file)
         connections_df = pd.read_csv(file_path, skiprows=range(0, 3))
         return connections_df
 
