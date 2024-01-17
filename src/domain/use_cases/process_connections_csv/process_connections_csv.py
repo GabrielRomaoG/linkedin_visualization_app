@@ -14,17 +14,17 @@ class ConnectionsCsvProcessor:
         ]
 
     def process(self, file_path: str):
-        self.__connections_df = self.__read_connections_csv(file_path)
-        self.__validate_columns(self.__connections_df)
-        self.__connections_df = self.__connections_df[self.__interest_columns]
-        self.__connections_df = self.__set_data_types(self.__connections_df)
+        connections_df = self.__read_connections_csv(file_path)
+        self.__validate_columns(connections_df)
+        connections_df = connections_df[self.__interest_columns]
+        connections_df = self.__set_data_types(connections_df)
 
-        self.__connections_df["user_name"] = (
-            self.__connections_df["URL"].str.split("/").str.get(-1).astype("string")
+        connections_df["user_name"] = (
+            connections_df["URL"].str.split("/").str.get(-1).astype("string")
         )
 
-        self.__connections_df = self.__connections_df.drop(columns=["URL"])
-        return self.__connections_df
+        connections_df = connections_df.drop(columns=["URL"])
+        return connections_df
 
     def __read_connections_csv(self, file_path: str):
         self.__validate_file_name(file_path, self.__expected_csv_file)
