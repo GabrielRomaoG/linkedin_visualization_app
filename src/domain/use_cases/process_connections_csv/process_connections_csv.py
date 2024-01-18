@@ -18,7 +18,7 @@ class ConnectionsCsvProcessor:
         self.__validate_file_name(file_path, self.__expected_csv_file)
         connections_df = self.__read_connections_csv(file_path)
         self.__validate_columns(connections_df)
-        connections_df = connections_df[self.__interest_columns]
+        connections_df = self.__select_interest_columns(connections_df)
         connections_df = self.__set_data_types(connections_df)
 
         connections_df["user_name"] = (
@@ -50,10 +50,8 @@ class ConnectionsCsvProcessor:
         ]
         validate_dataframe_columns(connections_df, expected_columns)
 
-    @classmethod
-    def __validate_file_name(cls, file_path: str, interest_file_name: str) -> None:
-        file_name = get_file_name_from_path(file_path)
-        compare_file_names(file_name, interest_file_name)
+    def __select_interest_columns(self, connections_df: pd.DataFrame) -> pd.DataFrame:
+        return connections_df[self.__interest_columns]
 
     @classmethod
     def __set_data_types(cls, connections_df: pd.DataFrame):
