@@ -29,6 +29,10 @@ class ConnectionsCsvProcessor:
         return connections_df
 
     @classmethod
+    def __validate_file_name(cls, file_path: str, interest_file_name: str) -> None:
+        file_name = get_file_name_from_path(file_path)
+        compare_file_names(file_name, interest_file_name)
+
     def __read_connections_csv(self, file_path: str):
         connections_df = self.__read_csv_func(file_path, skiprows=range(0, 3))
         return connections_df
