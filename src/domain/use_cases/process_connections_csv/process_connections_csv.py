@@ -20,12 +20,8 @@ class ConnectionsCsvProcessor:
         self.__validate_columns(connections_df)
         connections_df = self.__select_interest_columns(connections_df)
         connections_df = self.__set_data_types(connections_df)
-
-        connections_df["user_name"] = (
-            connections_df["URL"].str.split("/").str.get(-1).astype("string")
-        )
-
-        connections_df = connections_df.drop(columns=["URL"])
+        connections_df = self.__create_user_name_column(connections_df)
+        connections_df = self.__drop_url_column(connections_df)
         return connections_df
 
     @classmethod
@@ -63,3 +59,14 @@ class ConnectionsCsvProcessor:
             connections_df["Connected On"], format="%d %b %Y"
         )
         return connections_df
+
+    @classmethod
+    def __create_user_name_column(cls, connections_df: pd.DataFrame) -> pd.DataFrame:
+        connections_df["user_name"] = (
+            connections_df["URL"].str.split("/").str.get(-1).astype("string")
+        )
+        return connections_df
+
+    @classmethod
+    def __drop_url_column(cls, connections_df: pd.DataFrame) -> pd.DataFrame:
+        return connections_df.drop(columns=["URL"])
