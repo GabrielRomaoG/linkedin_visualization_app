@@ -4,7 +4,7 @@ from src.utils.dataframe_utils import validate_dataframe_columns
 
 
 class ConnectionsCsvProcessor:
-    def __init__(self):
+    def __init__(self, read_csv_func=pd.read_csv):
         self.__expected_csv_file = "Connections.csv"
         self.__interest_columns = [
             "URL",
@@ -12,6 +12,7 @@ class ConnectionsCsvProcessor:
             "Position",
             "Connected On",
         ]
+        self.__read_csv_func = read_csv_func
 
     def process(self, file_path: str):
         self.__validate_file_name(file_path, self.__expected_csv_file)
@@ -29,7 +30,7 @@ class ConnectionsCsvProcessor:
 
     @classmethod
     def __read_connections_csv(self, file_path: str):
-        connections_df = pd.read_csv(file_path, skiprows=range(0, 3))
+        connections_df = self.__read_csv_func(file_path, skiprows=range(0, 3))
         return connections_df
 
     @classmethod
