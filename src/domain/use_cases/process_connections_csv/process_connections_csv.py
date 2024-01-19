@@ -45,10 +45,12 @@ class ConnectionsCsvProcessor:
 
     @classmethod
     def __set_data_types(cls, connections_df: pd.DataFrame):
-        str_columns = ["Company", "Position"]
-        for col in str_columns:
-            connections_df[col] = connections_df[col].astype("string")
-
+        connections_df = connections_df.astype(
+            {
+                "Company": "string",
+                "Position": "string",
+            }
+        )
         connections_df["Connected On"] = pd.to_datetime(
             connections_df["Connected On"], format="%d %b %Y"
         )
