@@ -6,12 +6,6 @@ from src.utils.dataframe_utils import validate_dataframe_columns
 class ConnectionsCsvProcessor:
     def __init__(self, read_csv_func=pd.read_csv):
         self.__expected_csv_file = "Connections.csv"
-        self.__interest_columns = [
-            "URL",
-            "Company",
-            "Position",
-            "Connected On",
-        ]
         self.__read_csv_func = read_csv_func
 
     def process(self, file_path: str):
