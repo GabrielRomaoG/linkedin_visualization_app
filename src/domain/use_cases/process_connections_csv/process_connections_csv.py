@@ -12,10 +12,9 @@ class ConnectionsCsvProcessor:
         self.__validate_file_name(file_path, self.__expected_csv_file)
         connections_df = self.__read_connections_csv(file_path)
         self.__validate_columns(connections_df)
-        connections_df = self.__select_interest_columns(connections_df)
         connections_df = self.__set_data_types(connections_df)
         connections_df = self.__create_user_name_column(connections_df)
-        connections_df = self.__drop_url_column(connections_df)
+        connections_df = self.__select_interest_columns(connections_df)
         return connections_df
 
     @classmethod
@@ -41,7 +40,8 @@ class ConnectionsCsvProcessor:
         validate_dataframe_columns(connections_df, expected_columns)
 
     def __select_interest_columns(self, connections_df: pd.DataFrame) -> pd.DataFrame:
-        return connections_df[self.__interest_columns]
+        interest_columns = ["user_name", "Company", "Position", "Connected On"]
+        return connections_df[interest_columns]
 
     @classmethod
     def __set_data_types(cls, connections_df: pd.DataFrame):
