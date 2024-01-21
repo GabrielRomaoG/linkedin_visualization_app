@@ -62,7 +62,3 @@ class ConnectionsCsvProcessor:
             connections_df["URL"].str.split("/").str.get(-1).astype("string")
         )
         return connections_df
-
-    @classmethod
-    def __drop_url_column(cls, connections_df: pd.DataFrame) -> pd.DataFrame:
-        return connections_df.drop(columns=["URL"])
