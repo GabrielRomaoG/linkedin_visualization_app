@@ -1,9 +1,10 @@
 import pandas as pd
 from src.utils.file_handler import get_file_name_from_path, compare_file_names
 from src.utils.dataframe_utils import validate_dataframe_columns
+from .iprocess_connections_csv import IConnectionsCsvProcessor
 
 
-class ConnectionsCsvProcessor:
+class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
     def __init__(self, read_csv_func=pd.read_csv):
         self.__expected_csv_file = "Connections.csv"
         self.__read_csv_func = read_csv_func
