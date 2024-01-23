@@ -122,6 +122,7 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
         result = self.use_case.process(mocked_file_path)
 
         self.assertIn("user_name", result.columns)
+        self.assertEqual(result["user_name"].dtype, "string")
         self.assertEqual("johndoe", result["user_name"].values[0])
         self.assertEqual("janesmith", result["user_name"].values[1])
 
