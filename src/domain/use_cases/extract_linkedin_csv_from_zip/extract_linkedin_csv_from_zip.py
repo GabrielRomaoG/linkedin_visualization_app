@@ -15,5 +15,5 @@ class LinkedinCsvDataExtractor:
         self.__extract_files_zip_func(
             file_path=zip_path,
             destine_path=destine_folder,
-            files_to_extract=self._interest_files,
+            files_to_extract=self.__interest_files,
         )
