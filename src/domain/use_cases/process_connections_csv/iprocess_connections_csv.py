@@ -9,11 +9,11 @@ class IConnectionsCsvProcessor(ABC):
     @abstractmethod
     def process(self, file_path: str):
         """
-        Process the connections CSV file and return a pandas DataFrame.
+        Read the Connections.csv file, treat the data and save in the database.
 
         Args:
         file_path (str): The path to the connections CSV file.
 
         Returns:
-        pd.DataFrame: The processed connections data as a pandas DataFrame.
+        Dict: A response showing the data saved in the database.
         """

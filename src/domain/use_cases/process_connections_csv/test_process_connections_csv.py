@@ -1,6 +1,7 @@
-import pandas as pd
+from datetime import date
 import unittest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, mock_open, patch
+from src.domain.models.connection import Connection
 from src.domain.use_cases.process_connections_csv.process_connections_csv import (
     ConnectionsCsvProcessor,
 )
@@ -8,34 +9,12 @@ from src.domain.use_cases.process_connections_csv.process_connections_csv import
 
 class TestConnectionsCsvProcessor(unittest.TestCase):
     def setUp(self):
-        self.mocked_read_csv = MagicMock()
-        self.use_case = ConnectionsCsvProcessor(read_csv_func=self.mocked_read_csv)
-
-    def test_process(self):
-        mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Last Name": ["Doe", "Smith"],
-                "Company": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
+        self.mocked_connections_repository = MagicMock()
+        self.use_case = ConnectionsCsvProcessor(
+            connections_repository=self.mocked_connections_repository,
         )
 
-        result = self.use_case.process(mocked_file_path)
-
-        self.assertEqual(len(self.mocked_read_csv.return_value), len(result))
-        self.assertEqual(
-            result.Company.values, self.mocked_read_csv.return_value.Company.values
-        )
-        self.assertEqual(
-            result.Position.values, self.mocked_read_csv.return_value.Position.values
-        )
-
-    def test__validate_file_name(self):
+    def test_error__validate_file_name(self):
         mocked_file_name = "test.csv"
         mocked_file_path = f"some/path/{mocked_file_name}"
 
@@ -47,101 +26,90 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
             f"File name '{mocked_file_name}' does not match the interest file name 'Connections.csv'",
         )
 
-    def test__read_connections_csv(self):
+    def test__open(self):
         mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Last Name": ["Doe", "Smith"],
-                "Company": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
+        mock_file_content = (
+            "First Name,Last Name,Company,URL,Email Address,Position,Connected On"
         )
-
-        result = self.use_case.process(mocked_file_path)
-
-        self.assertIsInstance(result, pd.DataFrame)
-
-    def test__validate_columns(self):
-        mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Company2323": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
-        )
-
-        with self.assertRaises(Exception) as context:
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mock_file_content),
+        ):
             self.use_case.process(mocked_file_path)
-        self.assertEqual(
-            str(context.exception),
-            "DataFrame does not contain all expected columns",
-        )
+            self.use_case._ConnectionsCsvProcessor__open_file.assert_called_once_with(
+                mocked_file_path, "r"
+            )
 
-    def test__set_data_types(self):
+    def test_error_is_valid_connections_csv(self):
         mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Last Name": ["Doe", "Smith"],
-                "Company": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
+        mock_file_content = (
+            "First Name,Last Name,Company,URL,something,Email Address,Position"
         )
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mock_file_content),
+        ):
+            with self.assertRaises(Exception) as context:
+                self.use_case.process(mocked_file_path)
 
-        result = self.use_case.process(mocked_file_path)
+            self.assertEqual(
+                str(context.exception),
+                "Connections.csv doesn't has the expected columns",
+            )
+            self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_not_called()
 
-        self.assertEqual(result["Company"].dtype, "string")
-        self.assertEqual(result["Position"].dtype, "string")
-        self.assertEqual(result["Connected On"].dtype, "datetime64[ns]")
-
-    def test__create_user_name_column(self):
+    def test_error_index_equal_5_and_not_valid_csv(self):
         mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Last Name": ["Doe", "Smith"],
-                "Company": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
-        )
+        mock_file_content = "\n\n\n\n\n\n\nFirst Name,Last Namennnn,Company,URL12434,Email Address,Position,Connected On"
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mock_file_content),
+        ):
+            with self.assertRaises(Exception) as context:
+                self.use_case.process(mocked_file_path)
 
-        result = self.use_case.process(mocked_file_path)
+            self.assertEqual(
+                str(context.exception),
+                "Connections.csv doesn't has the expected columns",
+            )
+            self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_not_called()
 
-        self.assertIn("user_name", result.columns)
-        self.assertEqual(result["user_name"].dtype, "string")
-        self.assertEqual("johndoe", result["user_name"].values[0])
-        self.assertEqual("janesmith", result["user_name"].values[1])
-
-    def test__select_interest_columns(self):
+    def test__process_success(self):
         mocked_file_path = "some/place/Connections.csv"
-        self.mocked_read_csv.return_value = pd.DataFrame(
-            {
-                "First Name": ["John", "Jane"],
-                "Last Name": ["Doe", "Smith"],
-                "Company": ["ABC Inc.", "XYZ Corp."],
-                "URL": ["www.example.com/johndoe", "www.example.com/janesmith"],
-                "Email Address": ["john@example.com", "jane@example.com"],
-                "Position": ["Manager", "Engineer"],
-                "Connected On": ["01 Jan 2022", "15 Feb 2022"],
-            }
-        )
+        mocked_file_content = "First Name,Last Name,Company,URL,Email Address,Position,Connected On\n \
+             John,Doe,MicroTest,www.example.com/johndoe,johndoe@test.com,Tester,01 Jan 2012"
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mocked_file_content),
+        ):
 
-        result = self.use_case.process(mocked_file_path)
+            self.use_case.process(mocked_file_path)
+            self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_called_once_with(
+                Connection(
+                    user_name="johndoe",
+                    company="MicroTest",
+                    position="Tester",
+                    connected_on=date(2012, 1, 1),
+                )
+            )
 
-        self.assertListEqual(
-            list(result.columns), ["user_name", "Company", "Position", "Connected On"]
-        )
+    def test__process_multiple_connections(self):
+        mocked_file_path = "some/place/Connections.csv"
+        mocked_file_content = "First Name,Last Name,Company,URL,Email Address,Position,Connected On\n \
+             John,Doe,MicroTest,www.example.com/johndoe,johndoe@test.com,Tester,01 Jan 2012\n \
+             Alice,Waht,Testbook,www.lnk.com/alicew,alicew@some.com,Designer,24 Feb 2016"
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mocked_file_content),
+        ):
+
+            self.use_case.process(mocked_file_path)
+            assert (
+                self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.call_count
+                == 2
+            )
