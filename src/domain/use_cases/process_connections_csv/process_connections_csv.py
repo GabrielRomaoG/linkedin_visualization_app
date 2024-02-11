@@ -11,7 +11,7 @@ from src.infra.db.repositories.connections_repository import ConnectionsReposito
 class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
     def __init__(
         self,
-        connections_repository=ConnectionsRepository,
+        connections_repository=ConnectionsRepository(),
         open_file_func=open,
     ):
         self.__connections_repository = connections_repository
