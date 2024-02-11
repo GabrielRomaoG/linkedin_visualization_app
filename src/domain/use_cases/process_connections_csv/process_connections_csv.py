@@ -27,6 +27,11 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
                 headers = self.__headers
                 for index, row in enumerate(reader):
                     url = row[headers.index("URL")]
+                    if not url:
+                        logging.warning(
+                            f"The URL in the row {index} of the table is empty, so it will not be processed."
+                        )
+                        continue
                     user_name = self.__get_user_name_from_url(url)
                     connected_on_date = self.__set_connected_on_to_date_type(
                         row[headers.index("Connected On")]

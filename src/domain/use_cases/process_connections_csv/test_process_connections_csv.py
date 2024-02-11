@@ -5,6 +5,7 @@ from src.domain.models.connection import Connection
 from src.domain.use_cases.process_connections_csv.process_connections_csv import (
     ConnectionsCsvProcessor,
 )
+import pytest
 
 
 class TestConnectionsCsvProcessor(unittest.TestCase):
@@ -13,6 +14,10 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
         self.use_case = ConnectionsCsvProcessor(
             connections_repository=self.mocked_connections_repository,
         )
+
+    @pytest.fixture(autouse=True)
+    def inject_fixtures(self, caplog):
+        self._caplog = caplog
 
     def test_error__validate_file_name(self):
         mocked_file_name = "test.csv"
@@ -111,3 +116,24 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
             self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_has_calls(
                 expected_calls_to_insert_connection, any_order=False
             )
+
+    def test_warning_empty_url(self):
+        mocked_file_path = "some/place/Connections.csv"
+        mocked_file_content = (
+            "First Name,Last Name,Company,URL,Email Address,Position,Connected On\n"
+            ",,,,,,01 Jan 2012"
+        )
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mocked_file_content),
+        ):
+
+            self.use_case.process(mocked_file_path)
+            log = self._caplog.records[0]
+            self.assertEqual(
+                log.message,
+                "The URL in the row 0 of the table is empty, so it will not be processed.",
+            )
+            self.assertEqual(log.levelname, "WARNING")
+            self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_not_called()
