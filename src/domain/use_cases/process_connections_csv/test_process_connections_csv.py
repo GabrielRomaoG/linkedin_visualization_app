@@ -56,7 +56,7 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
 
             self.assertEqual(
                 str(context.exception),
-                "Connections.csv doesn't has the expected columns",
+                "Connections.csv doesn't have the expected columns",
             )
             self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_not_called()
 
@@ -73,7 +73,7 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
 
             self.assertEqual(
                 str(context.exception),
-                "Connections.csv doesn't has the expected columns",
+                "Connections.csv doesn't have the expected columns",
             )
             self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_not_called()
 

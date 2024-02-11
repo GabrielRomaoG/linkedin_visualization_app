@@ -1,5 +1,6 @@
 import csv
 import datetime
+from io import TextIOWrapper
 import logging
 from src.utils.file_handler import get_file_name_from_path, compare_file_names
 from .iprocess_connections_csv import IConnectionsCsvProcessor
@@ -20,48 +21,23 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
         try:
             expected_csv_file = "Connections.csv"
             self.__validate_file_name(file_path, expected_csv_file)
-            expected_columns = [
-                "First Name",
-                "Last Name",
-                "Company",
-                "URL",
-                "Email Address",
-                "Position",
-                "Connected On",
-            ]
             with self.__open_file(file_path, "r") as connections_csv:
+                self.__validate_csv(connections_csv)
                 reader = csv.reader(connections_csv)
-                is_valid_connections_csv = False
+                headers = self.__headers
                 for index, row in enumerate(reader):
-                    if (
-                        sorted(row) == sorted(expected_columns)
-                        and not is_valid_connections_csv
-                    ):
-                        is_valid_connections_csv = True
-                        column_names = row
-                        continue
-
-                    if index == 5 and not is_valid_connections_csv:
-                        break
-
-                    if is_valid_connections_csv:
-                        user_name = self.__get_user_name_from_url(
-                            row[column_names.index("URL")]
-                        )
-                        connected_on_date = self.__set_connected_on_to_date_type(
-                            row[column_names.index("Connected On")]
-                        )
-                        connection_model = Connection(
-                            user_name=user_name,
-                            company=row[column_names.index("Company")],
-                            position=row[column_names.index("Position")],
-                            connected_on=connected_on_date,
-                        )
-                        self.__connections_repository.insert_connection(
-                            connection_model
-                        )
-                if not is_valid_connections_csv:
-                    raise ValueError("Connections.csv doesn't has the expected columns")
+                    url = row[headers.index("URL")]
+                    user_name = self.__get_user_name_from_url(url)
+                    connected_on_date = self.__set_connected_on_to_date_type(
+                        row[headers.index("Connected On")]
+                    )
+                    connection_model = Connection(
+                        user_name=user_name,
+                        company=row[headers.index("Company")],
+                        position=row[headers.index("Position")],
+                        connected_on=connected_on_date,
+                    )
+                    self.__connections_repository.insert_connection(connection_model)
 
         except Exception as e_info:
             logging.error(
@@ -75,6 +51,25 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
     def __validate_file_name(cls, file_path: str, interest_file_name: str) -> None:
         file_name = get_file_name_from_path(file_path)
         compare_file_names(file_name, interest_file_name)
+
+    def __validate_csv(self, file_content: TextIOWrapper) -> None:
+        expected_columns = [
+            "First Name",
+            "Last Name",
+            "URL",
+            "Email Address",
+            "Company",
+            "Position",
+            "Connected On",
+        ]
+        for index, line in enumerate(file_content):
+            line = line.strip().split(",")
+            if sorted(line) == sorted(expected_columns):
+                self.__headers = line
+                return
+            if index == 5:
+                break
+        raise ValueError("Connections.csv doesn't have the expected columns")
 
     @classmethod
     def __get_user_name_from_url(cls, url: str) -> str:
