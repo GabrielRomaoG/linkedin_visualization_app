@@ -13,7 +13,4 @@ class IConnectionsCsvProcessor(ABC):
 
         Args:
         file_path (str): The path to the connections CSV file.
-
-        Returns:
-        Dict: A response showing the data saved in the database.
         """
