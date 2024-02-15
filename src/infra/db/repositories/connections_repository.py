@@ -4,6 +4,9 @@ from src.domain.models.connection import Connection as ConnectionModel
 
 
 class ConnectionsRepository:
+    def __init__(self, db_connection_handler=DBConnectionHandler) -> None:
+        self.__db_connection_handler = db_connection_handler
+
     @classmethod
     def __entity_to_model(cls, entity: ConnectionEntity) -> ConnectionModel:
         return ConnectionModel(
@@ -24,7 +27,7 @@ class ConnectionsRepository:
 
     def insert_connection(self, connections_model: ConnectionModel) -> None:
         new_registry = self.__model_to_entity(connections_model)
-        with DBConnectionHandler() as database:
+        with self.__db_connection_handler() as database:
             try:
                 database.session.add(new_registry)
                 database.session.commit()
