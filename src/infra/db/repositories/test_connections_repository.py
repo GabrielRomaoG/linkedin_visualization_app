@@ -1,5 +1,7 @@
 from sqlalchemy import select, delete
-from src.infra.db.settings.connection import DBConnectionHandler
+from src.infra.db.test_resources.connection_handler_test_class import (
+    DBConnectionHandler as DBConnectionHandlerTest,
+)
 from .connections_repository import ConnectionsRepository
 from src.domain.models.connection import Connection as ConnectionModel
 from src.infra.db.entities.connections import Connection as ConnectionEntity
@@ -8,15 +10,16 @@ import unittest
 import pytest
 
 
-db_connection_handler = DBConnectionHandler()
-db_connection = db_connection_handler.get_engine().connect()
-
-
-@pytest.mark.skip(reason="Sensive test")
 class TestConnectionsRepository(unittest.TestCase):
     def setUp(self):
-        self.repository = ConnectionsRepository()
+        DBConnectionHandlerTest.build_db()
+        self.repository = ConnectionsRepository(DBConnectionHandlerTest)
 
+    @classmethod
+    def tearDown(cls) -> None:
+        DBConnectionHandlerTest.delete_db()
+
+    @pytest.mark.skip(reason="Sensive test")
     def test_insert_connection(self):
         mocked_user_name = "teste"
         mocked_company = "some company"
@@ -31,12 +34,13 @@ class TestConnectionsRepository(unittest.TestCase):
 
         self.repository.insert_connection(mocked_connection_model)
 
+        db_handler = DBConnectionHandlerTest().get_engine().connect()
+
         stmt = select(ConnectionEntity).where(
             ConnectionEntity.user_name == mocked_user_name
         )
-
-        result = db_connection.execute(stmt)
-        registry = result.fetchall()[0]
+        result = db_handler.execute(stmt).fetchall()
+        registry = result[0]
 
         self.assertEqual(registry.user_name, mocked_user_name)
         self.assertEqual(registry.company, mocked_company)
@@ -47,5 +51,5 @@ class TestConnectionsRepository(unittest.TestCase):
             ConnectionEntity.user_name == registry.user_name
         )
 
-        db_connection.execute(del_stmt)
-        db_connection.commit()
+        db_handler.execute(del_stmt)
+        db_handler.commit()
