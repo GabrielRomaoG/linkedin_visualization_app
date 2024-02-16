@@ -53,3 +53,27 @@ class TestConnectionsRepository(unittest.TestCase):
 
         db_handler.execute(del_stmt)
         db_handler.commit()
+
+    @pytest.mark.skip(reason="Sensive test")
+    def test_get_all(self):
+
+        use_case_result = self.repository.get_all()
+
+        db_handler = DBConnectionHandlerTest().get_engine().connect()
+
+        stmt = select(ConnectionEntity)
+        query_result = db_handler.execute(stmt).fetchall()
+
+        use_case_result_length = len(use_case_result)
+        self.assertEqual(len(query_result), use_case_result_length)
+
+        for record_id in range(use_case_result_length):
+            use_case_record = use_case_result[record_id]
+            query_result_record = query_result[record_id]
+
+            self.assertEqual(use_case_record.user_name, query_result_record.user_name)
+            self.assertEqual(use_case_record.company, query_result_record.company)
+            self.assertEqual(use_case_record.position, query_result_record.position)
+            self.assertEqual(
+                use_case_record.connected_on, query_result_record.connected_on
+            )

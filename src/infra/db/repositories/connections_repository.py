@@ -1,3 +1,4 @@
+from typing import List
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.infra.db.entities.connections import Connection as ConnectionEntity
 from src.domain.models.connection import Connection as ConnectionModel
@@ -31,6 +32,19 @@ class ConnectionsRepository:
             try:
                 database.session.add(new_registry)
                 database.session.commit()
+            except Exception as exception:
+                database.session.rollback()
+                raise exception
+
+    def get_all(self) -> List[ConnectionModel]:
+        with self.__db_connection_handler() as database:
+            try:
+                connections_entities = database.session.query(ConnectionEntity).all()
+                connections_models = [
+                    self.__entity_to_model(connection)
+                    for connection in connections_entities
+                ]
+                return connections_models
             except Exception as exception:
                 database.session.rollback()
                 raise exception
