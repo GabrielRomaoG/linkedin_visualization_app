@@ -5,7 +5,9 @@ import logging
 from src.utils.file_handler import get_file_name_from_path, compare_file_names
 from .iprocess_connections_csv import IConnectionsCsvProcessor
 from src.domain.models.connection import Connection
-from src.infra.db.repositories.connections_repository import ConnectionsRepository
+from src.infra.db.repositories.connections.connections_repository import (
+    ConnectionsRepository,
+)
 
 
 class ConnectionsCsvProcessor(IConnectionsCsvProcessor):

@@ -2,7 +2,9 @@ from sqlalchemy import select, delete
 from src.infra.db.test_resources.connection_handler_test_class import (
     DBConnectionHandler as DBConnectionHandlerTest,
 )
-from .connections_repository import ConnectionsRepository
+from src.infra.db.repositories.connections.connections_repository import (
+    ConnectionsRepository,
+)
 from src.domain.models.connection import Connection as ConnectionModel
 from src.infra.db.entities.connections import Connection as ConnectionEntity
 from datetime import date
