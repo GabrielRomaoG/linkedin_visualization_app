@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class AllConnectionsGetterInterface(ABC):
+class IAllConnectionsGetter(ABC):
     """Interface for retrieving all connections as a DataFrame."""
 
     @abstractmethod

@@ -1,12 +1,15 @@
 from typing import List
 import pandas as pd
 from src.domain.models.connection import Connection
+from src.domain.use_cases.get_all_connections.iget_all_connections import (
+    IAllConnectionsGetter,
+)
 from src.infra.db.repositories.connections.connections_repository import (
     ConnectionsRepository,
 )
 
 
-class AllConnectionsGetter:
+class AllConnectionsGetter(IAllConnectionsGetter):
     def __init__(self, connections_repository=ConnectionsRepository) -> pd.DataFrame:
         self.__connections_repository = connections_repository
 
