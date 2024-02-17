@@ -113,7 +113,7 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
                 ),
             ]
             self.use_case.process(mocked_file_path)
-            self.use_case._ConnectionsCsvProcessor__connections_repository.insert_connection.assert_has_calls(
+            self.use_case._ConnectionsCsvProcessor__connections_repository().insert_connection.assert_has_calls(
                 expected_calls_to_insert_connection, any_order=False
             )
 

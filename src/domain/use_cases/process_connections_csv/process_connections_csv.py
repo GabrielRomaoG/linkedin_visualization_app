@@ -5,15 +5,15 @@ import logging
 from src.utils.file_handler import get_file_name_from_path, compare_file_names
 from .iprocess_connections_csv import IConnectionsCsvProcessor
 from src.domain.models.connection import Connection
-from src.infra.db.repositories.connections.connections_repository import (
-    ConnectionsRepository,
+from src.infra.db.repositories.connections.iconnections_repository import (
+    IConnectionsRepository as ConnectionsRepository,
 )
 
 
 class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
     def __init__(
         self,
-        connections_repository=ConnectionsRepository(),
+        connections_repository=ConnectionsRepository,
         open_file_func=open,
     ):
         self.__connections_repository = connections_repository
@@ -44,7 +44,7 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
                         position=row[headers.index("Position")],
                         connected_on=connected_on_date,
                     )
-                    self.__connections_repository.insert_connection(connection_model)
+                    self.__connections_repository().insert_connection(connection_model)
 
         except Exception as e_info:
             logging.error(

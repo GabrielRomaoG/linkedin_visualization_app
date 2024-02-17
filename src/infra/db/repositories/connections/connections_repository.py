@@ -1,10 +1,13 @@
 from typing import List
+from src.infra.db.repositories.connections.iconnections_repository import (
+    IConnectionsRepository,
+)
 from src.infra.db.settings.connection import DBConnectionHandler
 from src.infra.db.entities.connections import Connection as ConnectionEntity
 from src.domain.models.connection import Connection as ConnectionModel
 
 
-class ConnectionsRepository:
+class ConnectionsRepository(IConnectionsRepository):
     def __init__(self, db_connection_handler=DBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
 
