@@ -1,0 +1,30 @@
+from typing import List
+import pandas as pd
+from src.domain.models.connection import Connection
+from src.infra.db.repositories.connections.connections_repository import (
+    ConnectionsRepository,
+)
+
+
+class AllConnectionsGetter:
+    def __init__(self, connections_repository=ConnectionsRepository) -> pd.DataFrame:
+        self.__connections_repository = connections_repository
+
+    def get_all(self):
+        raw_connections = self.__connections_repository().get_all()
+        connections_df = self.__connections_list_to_data_frame(raw_connections)
+        return connections_df
+
+    @classmethod
+    def __connections_list_to_data_frame(cls, connections_list: List[Connection]):
+        data_list = []
+        for record in connections_list:
+            data = {
+                "user_name": record.user_name,
+                "company": record.company,
+                "position": record.position,
+                "connected_on": record.connected_on,
+            }
+            data_list.append(data)
+        connections_df = pd.DataFrame(data_list)
+        return connections_df
