@@ -36,6 +36,14 @@ class TestAllConnectionsGetter(unittest.TestCase):
         ]
         actual_df = self.use_case.get_all()
 
-        expected_df = pd.DataFrame(expected_data)
+        expected_df = pd.DataFrame(expected_data).astype(
+            {
+                "connected_on": "datetime64[ns]",
+            }
+        )
 
         self.assertTrue(expected_df.equals(actual_df))
+        self.assertEqual(actual_df["user_name"].dtype, "object")
+        self.assertEqual(actual_df["company"].dtype, "object")
+        self.assertEqual(actual_df["position"].dtype, "object")
+        self.assertEqual(actual_df["connected_on"].dtype, "datetime64[ns]")

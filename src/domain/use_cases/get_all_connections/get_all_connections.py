@@ -29,5 +29,9 @@ class AllConnectionsGetter(IAllConnectionsGetter):
                 "connected_on": record.connected_on,
             }
             data_list.append(data)
-        connections_df = pd.DataFrame(data_list)
+        connections_df = pd.DataFrame(data_list).astype(
+            {
+                "connected_on": "datetime64[ns]",
+            }
+        )
         return connections_df
