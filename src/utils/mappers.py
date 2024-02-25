@@ -1,0 +1,33 @@
+job_position_mapper = {
+    "Data Analyst": ["analista de dados", "data analyst"],
+    "Data Scientist": [
+        "cientista de dados",
+        "data scientist",
+        "machine learning",
+        "ciência de dados",
+        "data science",
+    ],
+    "BI": [" bi ", " bi", "business intelligence"],
+    "Recruiter": [
+        "recruit",
+        "rh",
+        "pessoa",
+        "people",
+        "talent",
+        "headhunter",
+        "hr",
+        "gente",
+        "recursos humanos",
+    ],
+    "Developer": [
+        "software",
+        "programmer",
+        "desenvolvedor",
+        "dev",
+        "programação",
+        "backend",
+        "programador",
+    ],
+    "Data Engineer": ["engenheiro de dados", "data engineer"],
+    "Manager": ["gerente", "manager"],
+}
