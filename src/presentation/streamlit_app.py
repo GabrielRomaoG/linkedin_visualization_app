@@ -16,6 +16,6 @@ with col2:
 show_pages(
     [
         Page("src/presentation/streamlit_app.py", "home", "🏠"),
-        Page("src/presentation/routes/connections.py", "Conexões", "🧑‍💻"),
+        Page("src/presentation/streamlit_pages/connections.py", "Connections", "🧑‍💻"),
     ]
 )
