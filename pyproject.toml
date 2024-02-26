@@ -12,6 +12,7 @@ pytest = "^7.4.4"
 pre-commit = "^3.6.0"
 sqlalchemy = "^2.0.25"
 st-pages = "^0.4.5"
+plotly = "^5.19.0"
 
 
 [build-system]
