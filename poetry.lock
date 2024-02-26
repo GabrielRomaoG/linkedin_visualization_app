@@ -1341,13 +1341,13 @@ streamlit = ">=1.10.0"
 
 [[package]]
 name = "streamlit"
-version = "1.30.0"
+version = "1.31.1"
 description = "A faster way to build and share data apps"
 optional = false
 python-versions = ">=3.8, !=3.9.7"
 files = [
-    {file = "streamlit-1.30.0-py2.py3-none-any.whl", hash = "sha256:536494a4edfe9b66ed70c437176cfd6c7e36b1d99d0587b0be64245fa89c241b"},
-    {file = "streamlit-1.30.0.tar.gz", hash = "sha256:90333915d9df8ce3b06de31b8a5bbab51e8cf0982dc6c32da9d6b1f2b4a9fa78"},
+    {file = "streamlit-1.31.1-py2.py3-none-any.whl", hash = "sha256:a1a84249f7a9b854fe356db06c85dc03c3f9da4df06a33aa5a922647b955e8c8"},
+    {file = "streamlit-1.31.1.tar.gz", hash = "sha256:dfc43ca85b4b4c31d097c27b983b8ccc960222ad907862b2b2fb4ddf04c50fdc"},
 ]
 
 [package.dependencies]
@@ -1362,7 +1362,7 @@ packaging = ">=16.8,<24"
 pandas = ">=1.3.0,<3"
 pillow = ">=7.1.0,<11"
 protobuf = ">=3.20,<5"
-pyarrow = ">=6.0"
+pyarrow = ">=7.0"
 pydeck = ">=0.8.0b4,<1"
 python-dateutil = ">=2.7.3,<3"
 requests = ">=2.27,<3"
@@ -1588,4 +1588,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "3.11"
-content-hash = "31bc7d81785dc6161172079a11d29648bb3180991aa6b502fb7734726f217526"
+content-hash = "a22e70f9e51c7d50d5ca17b056160247e7f5013ef255e8e387d0418395abc762"
