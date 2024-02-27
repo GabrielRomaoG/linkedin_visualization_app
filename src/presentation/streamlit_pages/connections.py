@@ -5,6 +5,8 @@ from src.domain.use_cases.get_all_connections.get_all_connections import (
 )
 import pandas as pd
 import altair as alt
+import plotly.express as px
+import plotly.graph_objects as go
 from src.utils.mappers import job_position_mapper
 
 
@@ -22,18 +24,24 @@ def main():
     page_bg_img = """
     <style>
     .st-emotion-cache-13k62yr {
-    background-image: url("https://i.imgur.com/T5TympJ.png");
-    background-size: cover;
+        background-size: cover;
+        background-image: url("https://i.imgur.com/T5TympJ.png")
+    }
+    .st-emotion-cache-1xw8zd0 {
+        background: rgba(0, 0, 0, 0.8);
+    }
+    [data-testid="stMetric"] {
+        background: rgba(0, 0, 0, 0.8);
+        border: 1px solid rgba(250, 250, 250, 0.2);
+        border-radius: 0.5rem;
+        padding: .5rem;
     }
     </style>
     """
-    # https://fakeimg.pl/600x400
 
     title_chart_config = {
-        "fontSize": 20,
-        "font": "Source Sans Pro",
-        "anchor": "start",
-        "color": "white",
+        "font": {"family": "Source Sans Pro", "size": 20, "color": "white"},
+        "pad": {"l": 0, "t": 0},
     }
 
     st.markdown(page_bg_img, unsafe_allow_html=True)
@@ -53,17 +61,6 @@ def main():
         connections_data.copy(), job_position_mapper["Recruiter"]
     )
 
-    percentage_recruiters = round(
-        int(
-            proportion_recruiters_df.loc[
-                proportion_recruiters_df["is_recruiter"].astype(bool) == (True,)
-            ]["count"]
-        )
-        / connections_count
-        * 100,
-        1,
-    )
-
     positions_count = generate_positions_count_df(
         connections_data.copy(), job_position_mapper
     )
@@ -78,75 +75,89 @@ def main():
     with row1[1]:
         st.metric("Average connections per week", new_connections_per_week)
 
-    st.altair_chart(
-        alt.Chart(weekly_connections_count_df.sort_index())
-        .mark_bar()
-        .encode(
-            x=alt.X("week_year", sort=None, title=""),
-            y=alt.Y("count", title=""),
-            tooltip=["week_year", "count"],
+    with st.container(border=True):
+        fig = px.bar(
+            weekly_connections_count_df,
+            x="week_year",
+            y="count",
+            title="Number of new Connections by week-year",
+            height=300,
         )
-        .properties(height=300, title="Number of new Connections by week-year")
-        .configure_title(**title_chart_config)
-        .configure_scale(continuousPadding=10),
-        use_container_width=True,
-    )
 
-    row3 = st.columns([0.4, 0.4, 0.3], gap="medium")
-    with row3[0]:
-        st.altair_chart(
-            alt.Chart(positions_count.sort_index())
-            .mark_bar()
-            .encode(
-                x=alt.X("count:Q", title=""),
-                y=alt.Y("mapped_position:N", sort="-x", title=""),
-                tooltip=["mapped_position", "count"],
-            )
-            .properties(height=300, title="Number of Connections by job position")
-            .configure_title(**title_chart_config),
-            use_container_width=True,
+        fig.update_layout(
+            margin=dict(t=30, b=0),
+            plot_bgcolor="rgba(0, 0, 0, 0)",
+            paper_bgcolor="rgba(0, 0, 0, 0)",
+            title=title_chart_config,
+            yaxis_title=None,
+            xaxis_title=None,
         )
+        st.plotly_chart(fig, use_container_width=True)
+
+    row3 = st.columns([0.4, 0.4, 0.3], gap="small")
+    with row3[0]:
+        fig = px.bar(
+            positions_count.sort_index(),
+            x="count",
+            y="mapped_position",
+            title="Number of Connections by job position",
+            height=300,
+            orientation="h",
+        )
+
+        fig.update_layout(
+            margin=dict(t=30, b=0),
+            plot_bgcolor="rgba(0, 0, 0, 0)",
+            paper_bgcolor="rgba(0, 0, 0, 0)",
+            title=title_chart_config,
+            yaxis_title=None,
+            xaxis_title=None,
+            yaxis={"categoryorder": "total ascending"},
+        )
+        st.container(border=True).plotly_chart(fig, use_container_width=True)
 
     with row3[1]:
-        st.altair_chart(
-            alt.Chart(group_by_companies_count)
-            .mark_bar()
-            .encode(
-                x=alt.X("count:Q", title=""),
-                y=alt.Y("company:N", sort=None, title=""),
-            )
-            .properties(height=300, title="Number of Connections by company")
-            .configure_title(**title_chart_config),
-            use_container_width=True,
+        fig = px.bar(
+            group_by_companies_count,
+            x="count",
+            y="company",
+            title="Number of Connections by Company",
+            height=300,
+            orientation="h",
         )
+
+        fig.update_layout(
+            margin=dict(t=30, b=0),
+            plot_bgcolor="rgba(0, 0, 0, 0)",
+            paper_bgcolor="rgba(0, 0, 0, 0)",
+            title=title_chart_config,
+            yaxis_title=None,
+            xaxis_title=None,
+            yaxis={"categoryorder": "total ascending"},
+        )
+        st.container(border=True).plotly_chart(fig, use_container_width=True)
 
     with row3[2]:
-        # st.write("#### Proportion of Recruiters (%)")
-        proportion_rec_donut = (
-            alt.Chart(proportion_recruiters_df)
-            .mark_arc(innerRadius=110)
-            .encode(
-                theta="count",
-                color=alt.Color("is_recruiter:N"),
-                tooltip=["is_recruiter", "count"],
-            )
-            .properties(height=300, title="Proportion of Recruiters (%)")
+        fig = go.Figure(
+            data=[
+                go.Pie(
+                    labels=proportion_recruiters_df["is_recruiter"],
+                    values=proportion_recruiters_df["count"],
+                    pull=[0.2, 0],
+                    textfont_size=15,
+                )
+            ]
         )
 
-        text_inside_donut = proportion_rec_donut.mark_text(
-            align="center",
-            baseline="middle",
-            fontSize=60,
-            fontWeight="bold",
-            color="white",
-        ).encode(text=alt.value(f"{percentage_recruiters} %"))
-
-        st.altair_chart(
-            alt.layer(proportion_rec_donut, text_inside_donut).configure_title(
-                **title_chart_config
-            ),
-            use_container_width=True,
+        fig.update_layout(
+            height=300,
+            margin=dict(t=30, b=0),
+            plot_bgcolor="rgba(0, 0, 0, 0)",
+            paper_bgcolor="rgba(0, 0, 0, 0)",
+            title=title_chart_config | {"text": "Proportion of Recruiters (%)"},
+            showlegend=False,
         )
+        st.container(border=True).plotly_chart(fig, use_container_width=True)
 
 
 def generate_weekly_count_connections_df(
