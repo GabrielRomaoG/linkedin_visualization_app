@@ -10,8 +10,13 @@ from src.utils.mappers import job_position_mapper
 
 
 class ConnectionsPage:
-    def __init__(self, all_connections_getter=AllConnectionsGetter) -> None:
+    def __init__(
+        self,
+        all_connections_getter=AllConnectionsGetter,
+        job_position_mapper=job_position_mapper,
+    ) -> None:
         self.__all_connections_getter = all_connections_getter
+        self.__job_mapper = job_position_mapper
 
     def main(self):
 
@@ -50,7 +55,7 @@ class ConnectionsPage:
         connections_data = self.__all_connections_getter().get_all()
         connections_count = len(connections_data)
 
-        weekly_connections_count_df = self.generate_weekly_count_connections_df(
+        weekly_connections_count_df = self.__generate_weekly_count_connections_df(
             connections_data.copy()
         )
 
@@ -58,15 +63,15 @@ class ConnectionsPage:
             connections_count / len(weekly_connections_count_df.week_year.unique()), 1
         )
 
-        proportion_recruiters_df = self.generate_recruiter_proportion_df(
-            connections_data.copy(), job_position_mapper["Recruiter"]
+        proportion_recruiters_df = self.__generate_recruiter_proportion_df(
+            connections_data.copy(), self.__job_mapper["Recruiter"]
         )
 
-        positions_count = self.generate_positions_count_df(
-            connections_data.copy(), job_position_mapper
+        positions_count = self.__generate_positions_count_df(
+            connections_data.copy(), self.__job_mapper
         )
 
-        group_by_companies_count = self.generate_companies_count(connections_data, 10)
+        group_by_companies_count = self.__generate_companies_count(connections_data, 10)
 
         st.write("## Connections Analysis")
 
@@ -160,8 +165,9 @@ class ConnectionsPage:
             )
             st.container(border=True).plotly_chart(fig, use_container_width=True)
 
-    def generate_weekly_count_connections_df(
-        self,
+    @classmethod
+    def __generate_weekly_count_connections_df(
+        cls,
         connections_data: pd.DataFrame,
     ) -> pd.DataFrame:
         """
@@ -180,11 +186,9 @@ class ConnectionsPage:
         last_date_con = connections_data.connected_on.max()
 
         connections_weekly_count_df = (
-            connections_data.assign(
-                week_year=connections_data["connected_on"].dt.strftime("%U-%Y"),
-            )
-            .groupby("week_year")
-            .size()
+            connections_data["connected_on"]
+            .dt.strftime("%U-%Y")
+            .value_counts()
             .reset_index(name="count")
         )
 
@@ -198,14 +202,24 @@ class ConnectionsPage:
             }
         )
 
-        weekly_connections_count_df = generated_week_year.merge(
-            connections_weekly_count_df, how="left", on="week_year"
-        ).fillna(0)
+        weekly_connections_count_df = (
+            generated_week_year.merge(
+                connections_weekly_count_df,
+                how="left",
+                left_on="week_year",
+                right_on="connected_on",
+            )
+            .drop(columns="connected_on")
+            .fillna(0)
+            .astype({"count": "int"})
+        )
+        print(connections_weekly_count_df)
 
         return weekly_connections_count_df
 
-    def generate_recruiter_proportion_df(
-        self, connections_data: pd.DataFrame, recruiter_mapper: list
+    @classmethod
+    def __generate_recruiter_proportion_df(
+        cls, connections_data: pd.DataFrame, recruiter_mapper: list
     ) -> pd.DataFrame:
 
         recruiters_percentage_df = (
@@ -220,8 +234,9 @@ class ConnectionsPage:
         )
         return recruiters_percentage_df
 
-    def generate_positions_count_df(
-        self, connections_data: pd.DataFrame, position_mapper: dict
+    @classmethod
+    def __generate_positions_count_df(
+        cls, connections_data: pd.DataFrame, position_mapper: dict
     ) -> pd.DataFrame:
         def _get_job_position(text, keyword_dict):
 
@@ -241,7 +256,7 @@ class ConnectionsPage:
 
         return positions_count
 
-    def generate_companies_count(
+    def __generate_companies_count(
         self, connections_data: pd.DataFrame, top: int
     ) -> pd.DataFrame:
         companies_count_df = (
