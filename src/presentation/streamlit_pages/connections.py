@@ -169,9 +169,8 @@ class ConnectionsPage:
             )
             st.container(border=True).plotly_chart(fig, use_container_width=True)
 
-    @classmethod
+    @staticmethod
     def __generate_weekly_count_connections_df(
-        cls,
         connections_data: pd.DataFrame,
     ) -> pd.DataFrame:
         """
@@ -231,9 +230,9 @@ class ConnectionsPage:
 
         return recruiters_proportion_df
 
-    @classmethod
+    @staticmethod
     def __generate_positions_count_df(
-        cls, connections_data: pd.DataFrame, position_mapper: dict
+        connections_data: pd.DataFrame, position_mapper: dict
     ) -> pd.DataFrame:
         def _get_job_position(text, keyword_dict):
 
@@ -253,8 +252,9 @@ class ConnectionsPage:
 
         return positions_count
 
+    @staticmethod
     def __generate_companies_count(
-        self, connections_data: pd.DataFrame, top: int
+        connections_data: pd.DataFrame, top: int
     ) -> pd.DataFrame:
         companies_count_df = (
             connections_data.groupby("company")
