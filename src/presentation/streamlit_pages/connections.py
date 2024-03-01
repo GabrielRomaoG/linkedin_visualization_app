@@ -1,4 +1,3 @@
-import re
 import streamlit as st
 from src.domain.use_cases.get_all_connections.get_all_connections import (
     AllConnectionsGetter,
@@ -63,12 +62,17 @@ class ConnectionsPage:
             connections_count / len(weekly_connections_count_df.week_year.unique()), 1
         )
 
-        proportion_recruiters_df = self.__generate_recruiter_proportion_df(
-            connections_data.copy(), self.__job_mapper["Recruiter"]
-        )
-
         positions_count = self.__generate_positions_count_df(
             connections_data.copy(), self.__job_mapper
+        )
+
+        proportion_recruiters_df = self.__generate_recruiter_proportion_df(
+            int(
+                positions_count.loc[
+                    positions_count.mapped_position == "Recruiter", "count"
+                ].item()
+            ),
+            connections_count,
         )
 
         group_by_companies_count = self.__generate_companies_count(connections_data, 10)
@@ -213,26 +217,19 @@ class ConnectionsPage:
             .fillna(0)
             .astype({"count": "int"})
         )
-        print(connections_weekly_count_df)
-
         return weekly_connections_count_df
 
-    @classmethod
+    @staticmethod
     def __generate_recruiter_proportion_df(
-        cls, connections_data: pd.DataFrame, recruiter_mapper: list
+        recruiters_count: int, connections_count: int
     ) -> pd.DataFrame:
 
-        recruiters_percentage_df = (
-            connections_data.assign(
-                is_recruiter=connections_data["position"].str.contains(
-                    "|".join(recruiter_mapper), flags=re.IGNORECASE, regex=True
-                )
-            )
-            .groupby("is_recruiter")
-            .size()
-            .reset_index(name="count")
-        )
-        return recruiters_percentage_df
+        recruiters_proportion_df = {
+            "is_recruiter": [False, True],
+            "count": [connections_count - recruiters_count, recruiters_count],
+        }
+
+        return recruiters_proportion_df
 
     @classmethod
     def __generate_positions_count_df(
