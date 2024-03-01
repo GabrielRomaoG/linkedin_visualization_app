@@ -12,7 +12,7 @@ class ConnectionsPage:
     def __init__(
         self,
         all_connections_getter=AllConnectionsGetter,
-        job_position_mapper=job_position_mapper,
+        job_position_mapper: dict[str, list[str]] = job_position_mapper,
     ) -> None:
         self.__all_connections_getter = all_connections_getter
         self.__job_mapper = job_position_mapper
