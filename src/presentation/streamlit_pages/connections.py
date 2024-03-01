@@ -67,11 +67,9 @@ class ConnectionsPage:
         )
 
         proportion_recruiters_df = self.__generate_recruiter_proportion_df(
-            int(
-                positions_count.loc[
-                    positions_count.mapped_position == "Recruiter", "count"
-                ].item()
-            ),
+            positions_count.loc[
+                positions_count.mapped_position == "Recruiter", "count"
+            ].item(),
             connections_count,
         )
 
