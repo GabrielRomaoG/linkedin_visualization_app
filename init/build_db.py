@@ -2,7 +2,7 @@ import sqlite3
 
 
 def main():
-    db_path = "src/data/processed/default_gabriel_data.db"
+    db_path = "src/data/processed/linkedin_data.db"
     conn = sqlite3.connect(db_path)
     cursor = conn.cursor()
 

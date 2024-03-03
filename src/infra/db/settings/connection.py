@@ -6,7 +6,7 @@ class DBConnectionHandler:
     def __init__(self) -> None:
         self.__connection_string = "{}:///{}".format(
             "sqlite",
-            "src/data/processed/default_gabriel_data.db",
+            "src/data/processed/linkedin_data.db",
         )
         self.__engine = self.__create_database_engine()
         self.session = None
