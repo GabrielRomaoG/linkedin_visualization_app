@@ -11,8 +11,8 @@ class ConnectionsRepository(IConnectionsRepository):
     def __init__(self, db_connection_handler=DBConnectionHandler) -> None:
         self.__db_connection_handler = db_connection_handler
 
-    @classmethod
-    def __entity_to_model(cls, entity: ConnectionEntity) -> ConnectionModel:
+    @staticmethod
+    def __entity_to_model(entity: ConnectionEntity) -> ConnectionModel:
         return ConnectionModel(
             user_name=entity.user_name,
             company=entity.company,
@@ -20,8 +20,8 @@ class ConnectionsRepository(IConnectionsRepository):
             connected_on=entity.connected_on,
         )
 
-    @classmethod
-    def __model_to_entity(cls, model: ConnectionModel) -> ConnectionEntity:
+    @staticmethod
+    def __model_to_entity(model: ConnectionModel) -> ConnectionEntity:
         return ConnectionEntity(
             user_name=model.user_name,
             company=model.company,
