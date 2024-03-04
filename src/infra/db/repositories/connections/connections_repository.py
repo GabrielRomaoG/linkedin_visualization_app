@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from src.infra.db.repositories.connections.iconnections_repository import (
     IConnectionsRepository,
 )
@@ -39,7 +39,7 @@ class ConnectionsRepository(IConnectionsRepository):
                 database.session.rollback()
                 raise exception
 
-    def get_all(self) -> List[ConnectionModel]:
+    def get_all(self) -> Optional[List[ConnectionModel]]:
         with self.__db_connection_handler() as database:
             try:
                 connections_entities = database.session.query(ConnectionEntity).all()

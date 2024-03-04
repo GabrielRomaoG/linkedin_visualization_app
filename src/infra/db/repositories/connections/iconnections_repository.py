@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from src.domain.models.connection import Connection as ConnectionModel
 from abc import ABC, abstractmethod
 
@@ -8,6 +8,7 @@ class IConnectionsRepository(ABC):
 
     @abstractmethod
     def insert_connection(self, connections_model: ConnectionModel) -> None:
+        pass
         """
         Saves record into the connections table
 
@@ -16,7 +17,8 @@ class IConnectionsRepository(ABC):
         """
 
     @abstractmethod
-    def get_all(self) -> List[ConnectionModel]:
+    def get_all(self) -> Optional[List[ConnectionModel]]:
+        pass
         """
         Get all records from the connections table
 
