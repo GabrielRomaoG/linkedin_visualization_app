@@ -27,6 +27,7 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
                 self.__validate_csv(connections_csv)
                 reader = csv.reader(connections_csv)
                 headers = self.__headers
+                connections_model_list = list()
                 for index, row in enumerate(reader):
                     url = row[headers.index("URL")]
                     if not url:
@@ -44,7 +45,10 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
                         position=row[headers.index("Position")],
                         connected_on=connected_on_date,
                     )
-                    self.__connections_repository().insert_connection(connection_model)
+                    connections_model_list.append(connection_model)
+                self.__connections_repository().bulk_insert_connections(
+                    connections_model_list
+                )
 
         except Exception as e_info:
             logging.error(
