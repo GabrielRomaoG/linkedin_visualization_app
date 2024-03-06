@@ -69,10 +69,7 @@ class TestConnectionsRepository(unittest.TestCase):
         use_case_result_length = len(use_case_result)
         self.assertEqual(len(query_result), use_case_result_length)
 
-        for record_id in range(use_case_result_length):
-            use_case_record = use_case_result[record_id]
-            query_result_record = query_result[record_id]
-
+        for use_case_record, query_result_record in zip(use_case_result, query_result):
             self.assertEqual(use_case_record.user_name, query_result_record.user_name)
             self.assertEqual(use_case_record.company, query_result_record.company)
             self.assertEqual(use_case_record.position, query_result_record.position)
