@@ -39,6 +39,20 @@ class ConnectionsRepository(IConnectionsRepository):
                 database.session.rollback()
                 raise exception
 
+    def bulk_insert_connections(
+        self, connections_models: List[ConnectionModel]
+    ) -> None:
+        with self.__db_connection_handler() as database:
+            try:
+                connections_entities = [
+                    self.__model_to_entity(model) for model in connections_models
+                ]
+                database.session.add_all(connections_entities)
+                database.session.commit()
+            except Exception as exception:
+                database.session.rollback()
+                raise exception
+
     def get_all(self) -> Optional[List[ConnectionModel]]:
         with self.__db_connection_handler() as database:
             try:

@@ -25,3 +25,15 @@ class IConnectionsRepository(ABC):
         return:
         List[ConnectionModel]
         """
+
+    def bulk_insert_connections(
+        self, connections_models: List[ConnectionModel]
+    ) -> None:
+        pass
+
+    """
+    Inserts multiple connections into the database
+
+    args:
+    connections_models: List[ConnectionsModel]
+    """

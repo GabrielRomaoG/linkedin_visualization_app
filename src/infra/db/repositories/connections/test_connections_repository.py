@@ -56,6 +56,40 @@ class TestConnectionsRepository(unittest.TestCase):
         db_handler.execute(del_stmt)
         db_handler.commit()
 
+    # @pytest.mark.skip(reason="Sensive test")
+    def test_bulk_insert_connections(self):
+        mocked_user_names = ["test1", "test2", "test3"]
+        mocked_connection_models = [
+            ConnectionModel(
+                user_name=name,
+                company="Test Company",
+                position="Tester",
+                connected_on=date(2023, 10, 12),
+            )
+            for name in mocked_user_names
+        ]
+
+        self.repository.bulk_insert_connections(mocked_connection_models)
+
+        db_handler = DBConnectionHandlerTest().get_engine().connect()
+
+        stmt = select(ConnectionEntity).where(
+            ConnectionEntity.user_name.in_(mocked_user_names)
+        )
+        result = db_handler.execute(stmt).fetchall()
+
+        self.assertEqual(len(result), len(mocked_user_names))
+
+        for model, entity in zip(mocked_connection_models, result):
+            self.assertEqual(entity.user_name, model.user_name)
+            self.assertEqual(entity.company, model.company)
+            self.assertEqual(entity.position, model.position)
+            self.assertEqual(entity.connected_on, model.connected_on)
+
+        del_stmt = delete(ConnectionEntity)
+        db_handler.execute(del_stmt)
+        db_handler.commit()
+
     @pytest.mark.skip(reason="Sensive test")
     def test_get_all(self):
 
