@@ -8,8 +8,11 @@ def main():
 
     with open("init/schema.sql") as schema_file:
         schema_sql = schema_file.read()
-        cursor.execute(schema_sql)
-
+        sql_statements = schema_sql.split(";")
+        for statement in sql_statements:
+            statement = statement.strip()
+            if statement:
+                cursor.execute(statement)
     conn.commit()
     conn.close()
 
