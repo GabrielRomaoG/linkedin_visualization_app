@@ -91,20 +91,22 @@ class TestConnectionsRepository(unittest.TestCase):
 
     def test_get_all(self):
 
-        use_case_result = self.repository.get_all()
+        repository_result = self.repository.get_all()
 
         db_handler = DBConnectionHandlerTest().get_engine().connect()
 
         stmt = select(ConnectionEntity)
         query_result = db_handler.execute(stmt).fetchall()
 
-        use_case_result_length = len(use_case_result)
+        use_case_result_length = len(repository_result)
         self.assertEqual(len(query_result), use_case_result_length)
 
-        for use_case_record, query_result_record in zip(use_case_result, query_result):
-            self.assertEqual(use_case_record.user_name, query_result_record.user_name)
-            self.assertEqual(use_case_record.company, query_result_record.company)
-            self.assertEqual(use_case_record.position, query_result_record.position)
+        for repository_record, query_result_record in zip(
+            repository_result, query_result
+        ):
+            self.assertEqual(repository_record.user_name, query_result_record.user_name)
+            self.assertEqual(repository_record.company, query_result_record.company)
+            self.assertEqual(repository_record.position, query_result_record.position)
             self.assertEqual(
-                use_case_record.connected_on, query_result_record.connected_on
+                repository_record.connected_on, query_result_record.connected_on
             )
