@@ -9,7 +9,6 @@ from src.domain.models.connection import Connection as ConnectionModel
 from src.infra.db.entities.connections import Connection as ConnectionEntity
 from datetime import date
 import unittest
-import pytest
 
 
 class TestConnectionsRepository(unittest.TestCase):
@@ -21,7 +20,6 @@ class TestConnectionsRepository(unittest.TestCase):
     def tearDown(cls) -> None:
         DBConnectionHandlerTest.delete_db()
 
-    @pytest.mark.skip(reason="Sensive test")
     def test_insert_connection(self):
         mocked_user_name = "teste"
         mocked_company = "some company"
@@ -56,7 +54,6 @@ class TestConnectionsRepository(unittest.TestCase):
         db_handler.execute(del_stmt)
         db_handler.commit()
 
-    # @pytest.mark.skip(reason="Sensive test")
     def test_bulk_insert_connections(self):
         mocked_user_names = ["test1", "test2", "test3"]
         mocked_connection_models = [
@@ -90,7 +87,6 @@ class TestConnectionsRepository(unittest.TestCase):
         db_handler.execute(del_stmt)
         db_handler.commit()
 
-    @pytest.mark.skip(reason="Sensive test")
     def test_get_all(self):
 
         use_case_result = self.repository.get_all()
