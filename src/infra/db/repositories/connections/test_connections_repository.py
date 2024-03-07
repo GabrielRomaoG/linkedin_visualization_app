@@ -83,7 +83,9 @@ class TestConnectionsRepository(unittest.TestCase):
             self.assertEqual(entity.position, model.position)
             self.assertEqual(entity.connected_on, model.connected_on)
 
-        del_stmt = delete(ConnectionEntity)
+        del_stmt = delete(ConnectionEntity).where(
+            ConnectionEntity.user_name.in_(mocked_user_names)
+        )
         db_handler.execute(del_stmt)
         db_handler.commit()
 
