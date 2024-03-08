@@ -14,7 +14,7 @@ class SharesRepository(ISharesRepository):
     @staticmethod
     def __entity_to_model(entity: ShareEntity) -> ShareModel:
         return ShareModel(
-            share_id=entity.share_id,
+            share_link=entity.share_link,
             shared_date=entity.shared_date,
             num_of_comments=entity.num_of_comments,
             num_of_likes=entity.num_of_likes,
@@ -23,7 +23,7 @@ class SharesRepository(ISharesRepository):
     @staticmethod
     def __model_to_entity(model: ShareModel) -> ShareEntity:
         return ShareEntity(
-            share_id=model.share_id,
+            share_link=model.share_link,
             shared_date=model.shared_date,
             num_of_comments=model.num_of_comments,
             num_of_likes=model.num_of_likes,

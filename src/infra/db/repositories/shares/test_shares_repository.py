@@ -21,33 +21,35 @@ class TestSharesRepository(unittest.TestCase):
         DBConnectionHandlerTest.delete_db()
 
     def test_bulk_insert_shares(self):
-        mocked_share_id = ["test4", "test5", "test6"]
+        mocked_share_links = ["linked/test4", "linked/test5", "linked/test6"]
         mocked_share_models = [
             ShareModel(
-                share_id=id,
+                share_link=id,
                 shared_date=date(2023, 10, 12),
                 num_of_comments=10,
                 num_of_likes=50,
             )
-            for id in mocked_share_id
+            for id in mocked_share_links
         ]
 
         self.repository.bulk_insert_shares(mocked_share_models)
 
         db_handler = DBConnectionHandlerTest().get_engine().connect()
 
-        stmt = select(ShareEntity).where(ShareEntity.share_id.in_(mocked_share_id))
+        stmt = select(ShareEntity).where(ShareEntity.share_link.in_(mocked_share_links))
         result = db_handler.execute(stmt).fetchall()
 
-        self.assertEqual(len(result), len(mocked_share_id))
+        self.assertEqual(len(result), len(mocked_share_links))
 
         for model, entity in zip(mocked_share_models, result):
-            self.assertEqual(entity.share_id, model.share_id)
+            self.assertEqual(entity.share_link, model.share_link)
             self.assertEqual(entity.shared_date, model.shared_date)
             self.assertEqual(entity.num_of_comments, model.num_of_comments)
             self.assertEqual(entity.num_of_likes, model.num_of_likes)
 
-        del_stmt = delete(ShareEntity).where(ShareEntity.share_id.in_(mocked_share_id))
+        del_stmt = delete(ShareEntity).where(
+            ShareEntity.share_link.in_(mocked_share_links)
+        )
         db_handler.execute(del_stmt)
         db_handler.commit()
 
@@ -66,7 +68,9 @@ class TestSharesRepository(unittest.TestCase):
         for repository_record, query_result_record in zip(
             repository_result, query_result
         ):
-            self.assertEqual(repository_record.share_id, query_result_record.share_id)
+            self.assertEqual(
+                repository_record.share_link, query_result_record.share_link
+            )
             self.assertEqual(
                 repository_record.shared_date, query_result_record.shared_date
             )

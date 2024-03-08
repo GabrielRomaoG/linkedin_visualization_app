@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS connections (
 );
 
 CREATE TABLE IF NOT EXISTS shares (
-    share_id VARCHAR(21) PRIMARY KEY,
+    share_link VARCHAR(255) PRIMARY KEY,
     shared_date DATE,
     num_of_comments INT,
     num_of_likes INT

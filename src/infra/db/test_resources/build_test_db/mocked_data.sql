@@ -34,12 +34,12 @@ VALUES
 
 INSERT INTO
     shares (
-        share_id,
+        share_link,
         shared_date,
         num_of_comments,
         num_of_likes
     )
 VALUES
-    ('share_id_1', '2023-10-26', 10, 25),
-    ('share_id_2', '2023-10-27', 5, 12),
-    ('share_id_3', '2023-10-28', 15, 30);
+    ('linkedin/share_id_1', '2023-10-26', 10, 25),
+    ('linkedin/share_id_2', '2023-10-27', 5, 12),
+    ('linkedin/share_id_3', '2023-10-28', 15, 30);
