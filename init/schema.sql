@@ -9,5 +9,5 @@ CREATE TABLE IF NOT EXISTS shares (
     share_link VARCHAR(255) PRIMARY KEY,
     shared_date DATE,
     num_of_comments INT,
-    num_of_likes INT
+    num_of_reactions INT
 )

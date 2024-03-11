@@ -12,4 +12,4 @@ class Share(Base):
     share_link: Mapped[str] = mapped_column(String(255), primary_key=True)
     shared_date: Mapped[date | None] = mapped_column(Date)
     num_of_comments: Mapped[int | None] = mapped_column(INTEGER)
-    num_of_likes: Mapped[int | None] = mapped_column(INTEGER)
+    num_of_reactions: Mapped[int | None] = mapped_column(INTEGER)

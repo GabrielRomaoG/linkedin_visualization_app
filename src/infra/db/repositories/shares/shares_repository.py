@@ -17,7 +17,7 @@ class SharesRepository(ISharesRepository):
             share_link=entity.share_link,
             shared_date=entity.shared_date,
             num_of_comments=entity.num_of_comments,
-            num_of_likes=entity.num_of_likes,
+            num_of_reactions=entity.num_of_reactions,
         )
 
     @staticmethod
@@ -26,7 +26,7 @@ class SharesRepository(ISharesRepository):
             share_link=model.share_link,
             shared_date=model.shared_date,
             num_of_comments=model.num_of_comments,
-            num_of_likes=model.num_of_likes,
+            num_of_reactions=model.num_of_reactions,
         )
 
     def bulk_insert_shares(self, share_models: List[ShareModel]) -> None:

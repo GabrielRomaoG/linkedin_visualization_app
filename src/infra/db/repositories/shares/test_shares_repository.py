@@ -27,7 +27,7 @@ class TestSharesRepository(unittest.TestCase):
                 share_link=id,
                 shared_date=date(2023, 10, 12),
                 num_of_comments=10,
-                num_of_likes=50,
+                num_of_reactions=50,
             )
             for id in mocked_share_links
         ]
@@ -45,7 +45,7 @@ class TestSharesRepository(unittest.TestCase):
             self.assertEqual(entity.share_link, model.share_link)
             self.assertEqual(entity.shared_date, model.shared_date)
             self.assertEqual(entity.num_of_comments, model.num_of_comments)
-            self.assertEqual(entity.num_of_likes, model.num_of_likes)
+            self.assertEqual(entity.num_of_reactions, model.num_of_reactions)
 
         del_stmt = delete(ShareEntity).where(
             ShareEntity.share_link.in_(mocked_share_links)
@@ -78,5 +78,5 @@ class TestSharesRepository(unittest.TestCase):
                 repository_record.num_of_comments, query_result_record.num_of_comments
             )
             self.assertEqual(
-                repository_record.num_of_likes, query_result_record.num_of_likes
+                repository_record.num_of_reactions, query_result_record.num_of_reactions
             )

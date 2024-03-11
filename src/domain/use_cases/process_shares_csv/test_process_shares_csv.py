@@ -101,13 +101,13 @@ class TestSharesCsvProcessor(unittest.TestCase):
                     share_link="linkedin/link/test1",
                     shared_date=date(2024, 1, 5),
                     num_of_comments=10,
-                    num_of_likes=40,
+                    num_of_reactions=40,
                 ),
                 Share(
                     share_link="linkedin/link/test2",
                     shared_date=date(2024, 4, 12),
                     num_of_comments=10,
-                    num_of_likes=40,
+                    num_of_reactions=40,
                 ),
             ]
             self.use_case.process(mocked_file_path)

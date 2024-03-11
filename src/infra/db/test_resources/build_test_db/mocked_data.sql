@@ -37,7 +37,7 @@ INSERT INTO
         share_link,
         shared_date,
         num_of_comments,
-        num_of_likes
+        num_of_reactions
     )
 VALUES
     ('linkedin/share_id_1', '2023-10-26', 10, 25),

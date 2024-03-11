@@ -44,7 +44,7 @@ class SharesCsvProcessor(ISharesCsvProcessor):
                         share_link=share_link,
                         shared_date=shared_date,
                         num_of_comments=10,  # must implement scrap method
-                        num_of_likes=40,  # must implement scrap method
+                        num_of_reactions=40,  # must implement scrap method
                     )
                     shares_model_list.append(share_model)
                 self.__shares_repository().bulk_insert_shares(shares_model_list)
