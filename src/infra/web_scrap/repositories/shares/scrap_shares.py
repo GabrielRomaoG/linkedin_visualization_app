@@ -30,7 +30,7 @@ class SharesScrapper(ISharesScrapper):
             response = self.__request_library.get(
                 url=self.url, headers=self.__http_headers
             )
-            response.raise_for_status()  # Raise for non-2xx status codes
+            response.raise_for_status()
 
             self.__parsed_html = BeautifulSoup(response.text, "html.parser")
             return self
