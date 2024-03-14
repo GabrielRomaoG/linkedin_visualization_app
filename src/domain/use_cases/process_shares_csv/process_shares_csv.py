@@ -2,6 +2,7 @@ import csv
 import datetime
 from io import TextIOWrapper
 import logging
+from src.infra.web_scrap.repositories.shares.scrap_shares import SharesScrapper
 from src.utils.file_handler import get_file_name_from_path, compare_file_names
 from src.domain.use_cases.process_shares_csv.iprocess_shares_csv import (
     ISharesCsvProcessor,
@@ -17,9 +18,11 @@ class SharesCsvProcessor(ISharesCsvProcessor):
         self,
         shares_repository=SharesRepository,
         open_file_func=open,
+        shares_scrapper=SharesScrapper,
     ):
         self.__shares_repository = shares_repository
         self.__open_file = open_file_func
+        self.__shares_scrapper = shares_scrapper
 
     def process(self, file_path: str) -> dict:
         try:
@@ -40,11 +43,19 @@ class SharesCsvProcessor(ISharesCsvProcessor):
                     shared_date = self.__set_date_str_to_date_type(
                         row[headers.index("Date")]
                     )
+                    share_html_parsed = (
+                        self.__shares_scrapper()
+                        .set_url(share_link)
+                        .fetch_and_parse_html()
+                    )
+                    num_of_comments = share_html_parsed.get_num_of_comments()
+                    num_of_reactions = share_html_parsed.get_num_of_reactions()
+
                     share_model = Share(
                         share_link=share_link,
                         shared_date=shared_date,
-                        num_of_comments=10,  # must implement scrap method
-                        num_of_reactions=40,  # must implement scrap method
+                        num_of_comments=num_of_comments,
+                        num_of_reactions=num_of_reactions,
                     )
                     shares_model_list.append(share_model)
                 self.__shares_repository().bulk_insert_shares(shares_model_list)

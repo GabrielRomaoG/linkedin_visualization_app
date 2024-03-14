@@ -1,6 +1,6 @@
 from datetime import date
 import unittest
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import MagicMock, Mock, mock_open, patch
 from src.domain.models.shares import Share
 from src.domain.use_cases.process_shares_csv.process_shares_csv import (
     SharesCsvProcessor,
@@ -11,8 +11,10 @@ import pytest
 class TestSharesCsvProcessor(unittest.TestCase):
     def setUp(self):
         self.mocked_shares_repository = MagicMock()
+        self.mocked_shares_scrapper = MagicMock()
         self.use_case = SharesCsvProcessor(
             shares_repository=self.mocked_shares_repository,
+            shares_scrapper=self.mocked_shares_scrapper,
         )
 
     @pytest.fixture(autouse=True)
@@ -91,6 +93,14 @@ class TestSharesCsvProcessor(unittest.TestCase):
             "2024-01-05 00:14:41,linkedin/link/test1,'Some thing',,,MEMBER_NETWORK\n"
             "2024-04-12 12:14:41,linkedin/link/test2,'Some thing2',,,MEMBER_NETWORK\n"
         )
+        mock_num_of_comments = 10
+        mock_num_of_reactions = 25
+
+        self.mocked_shares_scrapper.return_value.set_url.return_value.fetch_and_parse_html.return_value = MagicMock(
+            get_num_of_reactions=Mock(return_value=mock_num_of_reactions),
+            get_num_of_comments=Mock(return_value=mock_num_of_comments),
+        )
+
         with patch.object(
             self.use_case,
             "_SharesCsvProcessor__open_file",
@@ -100,16 +110,17 @@ class TestSharesCsvProcessor(unittest.TestCase):
                 Share(
                     share_link="linkedin/link/test1",
                     shared_date=date(2024, 1, 5),
-                    num_of_comments=10,
-                    num_of_reactions=40,
+                    num_of_comments=mock_num_of_comments,
+                    num_of_reactions=mock_num_of_reactions,
                 ),
                 Share(
                     share_link="linkedin/link/test2",
                     shared_date=date(2024, 4, 12),
-                    num_of_comments=10,
-                    num_of_reactions=40,
+                    num_of_comments=mock_num_of_comments,
+                    num_of_reactions=mock_num_of_reactions,
                 ),
             ]
+
             self.use_case.process(mocked_file_path)
             self.use_case._SharesCsvProcessor__shares_repository().bulk_insert_shares.assert_called_once_with(
                 expected_call_to_bulk_insert_connections
