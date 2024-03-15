@@ -1,3 +1,4 @@
 .vscode/
 .flake8
 __pycache__/
+test.db
