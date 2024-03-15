@@ -36,10 +36,12 @@ class SharesScrapper(ISharesScrapper):
             return self
 
         except requests.HTTPError as e:
-            logging.error(f"Error fetching webpage: HTTP error {e}")
+            logging.error(f"Error fetching webpage '{self.url}': HTTP error {e}")
             raise
         except Exception as e:
-            logging.error(f"Error fetching or parsing webpage: {e}", exc_info=True)
+            logging.error(
+                f"Error fetching or parsing webpage '{self.url}': {e}", exc_info=True
+            )
             raise
 
     def get_num_of_reactions(self) -> int:
@@ -47,29 +49,43 @@ class SharesScrapper(ISharesScrapper):
             raise ValueError(
                 "the html is not fetched and parsed. Please use fetch_and_parse_html first."
             )
-        num_of_reactions = int(
-            self.__parsed_html.find(
-                "a",
-                attrs={
-                    "data-tracking-control-name": "public_post_social-actions-reactions"
-                },
-            ).attrs["data-num-reactions"]
-        )
+        try:
+            num_of_reactions = int(
+                self.__parsed_html.find(
+                    "a",
+                    attrs={
+                        "data-tracking-control-name": "public_post_social-actions-reactions"
+                    },
+                ).attrs["data-num-reactions"]
+            )
 
-        return num_of_reactions
+            return num_of_reactions
+        except Exception as e:
+            logging.error(
+                f"Error getting number of reactions of the url '{self.url}': {e}",
+                exc_info=True,
+            )
+            raise
 
     def get_num_of_comments(self) -> int:
         if not self.__parsed_html:
             raise ValueError(
                 "the html is not fetched and parsed. Please use fetch_and_parse_html first."
             )
-        num_of_comments = int(
-            self.__parsed_html.find(
-                "a",
-                attrs={
-                    "data-tracking-control-name": "public_post_social-actions-comments"
-                },
-            ).attrs["data-num-comments"]
-        )
+        try:
+            num_of_comments = int(
+                self.__parsed_html.find(
+                    "a",
+                    attrs={
+                        "data-tracking-control-name": "public_post_social-actions-comments"
+                    },
+                ).attrs["data-num-comments"]
+            )
 
-        return num_of_comments
+            return num_of_comments
+        except Exception as e:
+            logging.error(
+                f"Error getting number of reactions of the url '{self.url}': {e}",
+                exc_info=True,
+            )
+            raise
