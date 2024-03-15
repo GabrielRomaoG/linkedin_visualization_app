@@ -59,6 +59,13 @@ class TestSharesScrapper(unittest.TestCase):
             self.repository.get_num_of_comments()
         self.assertTrue("the html is not fetched and parsed" in str(context.exception))
 
+    def test_get_num_of_reactions_none_tag(self):
+        self.mocked_http_library.get.return_value.text = ""
+        self.repository.set_url("https://www.linkedin.com/feed/update/test123123")
+        self.repository.fetch_and_parse_html()
+        num_of_reactions = self.repository.get_num_of_reactions()
+        self.assertIsNone(num_of_reactions)
+
     def test_get_num_of_reactions_success(self):
         with open("src/infra/web_scrap/test_resources/share.html", "r") as file:
             mocked_html_content = file.read()
@@ -68,6 +75,13 @@ class TestSharesScrapper(unittest.TestCase):
         num_of_reactions = self.repository.get_num_of_reactions()
         self.assertIsInstance(num_of_reactions, int)
         self.assertEqual(num_of_reactions, 116)
+
+    def test_get_num_of_comments_none_tag(self):
+        self.mocked_http_library.get.return_value.text = ""
+        self.repository.set_url("https://www.linkedin.com/feed/update/test123123")
+        self.repository.fetch_and_parse_html()
+        num_of_comments = self.repository.get_num_of_comments()
+        self.assertIsNone(num_of_comments)
 
     def test_get_num_of_comments_success(self):
         with open("src/infra/web_scrap/test_resources/share.html", "r") as file:

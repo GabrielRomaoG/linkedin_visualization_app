@@ -32,7 +32,7 @@ class ISharesScrapper(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_of_reactions(self) -> int:
+    def get_num_of_reactions(self) -> Optional[int]:
         """
         Extracts the number of reactions from the parsed HTML content.
 
@@ -45,7 +45,7 @@ class ISharesScrapper(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def get_num_of_comments(self) -> int:
+    def get_num_of_comments(self) -> Optional[int]:
         """
         Extracts the number of comments from the parsed HTML content.
 
