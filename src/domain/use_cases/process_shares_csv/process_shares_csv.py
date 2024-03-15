@@ -34,37 +34,48 @@ class SharesCsvProcessor(ISharesCsvProcessor):
                 headers = self.__headers
                 shares_model_list = list()
                 for index, row in enumerate(reader):
-                    share_link = row[headers.index("ShareLink")]
-                    if not share_link:
+                    try:
+                        share_link = row[headers.index("ShareLink")]
+
+                        if not share_link:
+                            logging.warning(
+                                f"The ShareLink in the row {index} of the table is empty, so it will not be processed."
+                            )
+                            continue
+
+                        shared_date = self.__set_date_str_to_date_type(
+                            row[headers.index("Date")]
+                        )
+
+                        share_html_parsed = (
+                            self.__shares_scrapper()
+                            .set_url(share_link)
+                            .fetch_and_parse_html()
+                        )
+
+                        num_of_comments = share_html_parsed.get_num_of_comments()
+                        num_of_reactions = share_html_parsed.get_num_of_reactions()
+
+                        share_model = Share(
+                            share_link=share_link,
+                            shared_date=shared_date,
+                            num_of_comments=num_of_comments,
+                            num_of_reactions=num_of_reactions,
+                        )
+
+                        shares_model_list.append(share_model)
+                    except Exception as e:
                         logging.warning(
-                            f"The ShareLink in the row {index} of the table is empty, so it will not be processed."
+                            f"Error processing share row of index '{index}': {e}",
+                            exc_info=True,
                         )
                         continue
-                    shared_date = self.__set_date_str_to_date_type(
-                        row[headers.index("Date")]
-                    )
-                    share_html_parsed = (
-                        self.__shares_scrapper()
-                        .set_url(share_link)
-                        .fetch_and_parse_html()
-                    )
-                    num_of_comments = share_html_parsed.get_num_of_comments()
-                    num_of_reactions = share_html_parsed.get_num_of_reactions()
 
-                    share_model = Share(
-                        share_link=share_link,
-                        shared_date=shared_date,
-                        num_of_comments=num_of_comments,
-                        num_of_reactions=num_of_reactions,
-                    )
-                    shares_model_list.append(share_model)
                 self.__shares_repository().bulk_insert_shares(shares_model_list)
 
         except Exception as e_info:
             logging.error(
-                "Error processing the Shares.csv file: %s",
-                e_info,
-                exc_info=True,
+                "Error processing the Shares.csv file: %s", e_info, exc_info=True
             )
             raise e_info
 
