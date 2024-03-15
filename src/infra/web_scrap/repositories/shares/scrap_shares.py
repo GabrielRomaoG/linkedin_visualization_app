@@ -50,6 +50,10 @@ class SharesScrapper(ISharesScrapper):
                 "the html is not fetched and parsed. Please use fetch_and_parse_html first."
             )
         try:
+
+            if self.__parsed_html.find("div", class_="no-content-card"):
+                return None
+
             reactions_html_tag = self.__parsed_html.find(
                 "a",
                 attrs={
@@ -60,7 +64,7 @@ class SharesScrapper(ISharesScrapper):
             num_of_reactions = (
                 int(reactions_html_tag.attrs["data-num-reactions"])
                 if reactions_html_tag
-                else None
+                else 0
             )
 
             return num_of_reactions
@@ -77,6 +81,10 @@ class SharesScrapper(ISharesScrapper):
                 "the html is not fetched and parsed. Please use fetch_and_parse_html first."
             )
         try:
+
+            if self.__parsed_html.find("div", class_="no-content-card"):
+                return None
+
             comment_html_tag = self.__parsed_html.find(
                 "a",
                 attrs={
@@ -87,7 +95,7 @@ class SharesScrapper(ISharesScrapper):
             num_of_comments = (
                 int(comment_html_tag.attrs.get("data-num-comments", None))
                 if comment_html_tag
-                else None
+                else 0
             )
 
             return num_of_comments
