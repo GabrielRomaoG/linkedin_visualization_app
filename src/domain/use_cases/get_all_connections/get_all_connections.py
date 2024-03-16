@@ -20,15 +20,15 @@ class AllConnectionsGetter(IAllConnectionsGetter):
 
     @classmethod
     def __connections_list_to_data_frame(cls, connections_list: List[Connection]):
-        data_list = []
-        for record in connections_list:
-            data = {
+        data_list = [
+            {
                 "user_name": record.user_name,
                 "company": record.company,
                 "position": record.position,
                 "connected_on": record.connected_on,
             }
-            data_list.append(data)
+            for record in connections_list
+        ]
         connections_df = pd.DataFrame(data_list).astype(
             {
                 "connected_on": "datetime64[ns]",
