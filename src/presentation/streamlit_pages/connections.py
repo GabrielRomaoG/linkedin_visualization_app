@@ -5,6 +5,7 @@ from src.domain.use_cases.get_all_connections.get_all_connections import (
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from src.presentation import styles
 from src.utils.mappers import job_position_mapper
 
 
@@ -26,30 +27,7 @@ class ConnectionsPage:
             initial_sidebar_state="expanded",
         )
 
-        css_styles = """
-        <style>
-        .st-emotion-cache-13k62yr {
-            background-size: cover;
-            background-image: url("https://i.imgur.com/T5TympJ.png")
-        }
-        .st-emotion-cache-1xw8zd0 {
-            background: rgba(0, 0, 0, 0.8);
-        }
-        [data-testid="stMetric"] {
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(250, 250, 250, 0.2);
-            border-radius: 0.5rem;
-            padding: .5rem;
-        }
-        </style>
-        """
-
-        title_chart_config = {
-            "font": {"family": "Source Sans Pro", "size": 20, "color": "white"},
-            "pad": {"l": 0, "t": 0},
-        }
-
-        st.markdown(css_styles, unsafe_allow_html=True)
+        st.markdown(styles.css_styles, unsafe_allow_html=True)
 
         connections_data = self.__all_connections_getter().get_all()
         connections_count = len(connections_data)
@@ -96,7 +74,7 @@ class ConnectionsPage:
                 margin=dict(t=30, b=0),
                 plot_bgcolor="rgba(0, 0, 0, 0)",
                 paper_bgcolor="rgba(0, 0, 0, 0)",
-                title=title_chart_config,
+                title=styles.title_chart_config,
                 yaxis_title=None,
                 xaxis_title=None,
             )
@@ -117,7 +95,7 @@ class ConnectionsPage:
                 margin=dict(t=30, b=0),
                 plot_bgcolor="rgba(0, 0, 0, 0)",
                 paper_bgcolor="rgba(0, 0, 0, 0)",
-                title=title_chart_config,
+                title=styles.title_chart_config,
                 yaxis_title=None,
                 xaxis_title=None,
                 yaxis={"categoryorder": "total ascending"},
@@ -138,7 +116,7 @@ class ConnectionsPage:
                 margin=dict(t=30, b=0),
                 plot_bgcolor="rgba(0, 0, 0, 0)",
                 paper_bgcolor="rgba(0, 0, 0, 0)",
-                title=title_chart_config,
+                title=styles.title_chart_config,
                 yaxis_title=None,
                 xaxis_title=None,
                 yaxis={"categoryorder": "total ascending"},
@@ -162,7 +140,8 @@ class ConnectionsPage:
                 margin=dict(t=30, b=0),
                 plot_bgcolor="rgba(0, 0, 0, 0)",
                 paper_bgcolor="rgba(0, 0, 0, 0)",
-                title=title_chart_config | {"text": "Proportion of Recruiters (%)"},
+                title=styles.title_chart_config
+                | {"text": "Proportion of Recruiters (%)"},
                 showlegend=False,
             )
             st.container(border=True).plotly_chart(fig, use_container_width=True)
