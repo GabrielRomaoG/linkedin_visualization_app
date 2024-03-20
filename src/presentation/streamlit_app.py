@@ -17,5 +17,6 @@ show_pages(
     [
         Page("src/presentation/streamlit_app.py", "home", "🏠"),
         Page("src/presentation/streamlit_pages/connections.py", "Connections", "🧑‍💻"),
+        Page("src/presentation/streamlit_pages/shares.py", "Shares", "🚩"),
     ]
 )
