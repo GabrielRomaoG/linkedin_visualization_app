@@ -45,9 +45,7 @@ class ConnectionsPage:
         )
 
         proportion_recruiters_df = self.__generate_recruiter_proportion_df(
-            positions_count.loc[
-                positions_count.mapped_position == "Recruiter", "count"
-            ].item(),
+            positions_count.get("Recruiter", 0),
             connections_count,
         )
 
@@ -83,9 +81,8 @@ class ConnectionsPage:
         row3 = st.columns([0.4, 0.4, 0.3], gap="small")
         with row3[0]:
             fig = px.bar(
-                positions_count.sort_index(),
-                x="count",
-                y="mapped_position",
+                x=positions_count,
+                y=positions_count.index,
                 title="Number of Connections by job position",
                 height=300,
                 orientation="h",
@@ -223,9 +220,7 @@ class ConnectionsPage:
             lambda text: _get_job_position(text, position_mapper)
         )
 
-        positions_count = (
-            connections_data.groupby("mapped_position").size().reset_index(name="count")
-        )
+        positions_count = connections_data.groupby("mapped_position").size()
 
         return positions_count
 

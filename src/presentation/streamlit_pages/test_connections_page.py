@@ -58,26 +58,25 @@ class TestConnectionsPage(unittest.TestCase, AppTest):
         pdt.assert_frame_equal(result, expected_result)
 
     def test__generate_positions_count_df(self):
-        expected_result = pd.DataFrame(
-            {
-                "mapped_position": [
+        expected_result = pd.Series(
+            data=[2, 1, 1],
+            index=pd.Index(
+                [
                     "Data Analyst",
                     "Recruiter",
                     "Other",
                 ],
-                "count": [2, 1, 1],
-            }
+                name="mapped_position",
+            ),
         )
 
         result = self.page._ConnectionsPage__generate_positions_count_df(
             self.mocked_all_connections_df.copy(), self.mocked_job_mapper
         )
-        result_sorted = result.sort_values(by="mapped_position").reset_index(drop=True)
-        expected_result_sorted = expected_result.sort_values(
-            by="mapped_position"
-        ).reset_index(drop=True)
+        result_sorted = result.sort_index()
+        expected_result_sorted = expected_result.sort_index()
 
-        pdt.assert_frame_equal(result_sorted, expected_result_sorted)
+        pdt.assert_series_equal(result_sorted, expected_result_sorted)
 
     def test__generate_recruiter_proportion_df(self):
         expected_result = {
