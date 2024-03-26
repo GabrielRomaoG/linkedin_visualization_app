@@ -1,7 +1,10 @@
+from src.domain.use_cases.extract_linkedin_csv_from_zip.iextract_linkedin_csv_from_zip import (
+    ILinkedinCsvDataExtractor,
+)
 from src.utils.file_handler import extract_files_from_zip
 
 
-class LinkedinCsvDataExtractor:
+class LinkedinCsvDataExtractor(ILinkedinCsvDataExtractor):
     def __init__(self, extract_files_zip_func=extract_files_from_zip):
         self.__extract_files_zip_func = extract_files_zip_func
         self.__interest_files = (

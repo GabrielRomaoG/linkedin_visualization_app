@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 
 
-class LinkedinCsvDataExtractor(ABC):
+class ILinkedinCsvDataExtractor(ABC):
     @abstractmethod
     def extract(self, zip_path: str, destine_folder: str):
         """
