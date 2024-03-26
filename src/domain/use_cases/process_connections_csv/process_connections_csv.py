@@ -22,7 +22,7 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
         self.__open_file = open_file_func
         self.__os_get_env = os_get_env
 
-    def process(self, file_path: str) -> dict:
+    def process(self, file_path: str) -> list[Connection]:
         try:
             expected_csv_file = "Connections.csv"
             self.__validate_file_name(file_path, expected_csv_file)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from src.domain.models.connection import Connection
 
 
 class IConnectionsCsvProcessor(ABC):
@@ -7,7 +8,7 @@ class IConnectionsCsvProcessor(ABC):
     """
 
     @abstractmethod
-    def process(self, file_path: str):
+    def process(self, file_path: str) -> list[Connection]:
         """
         Read the Connections.csv file, treat the data and save in the database.
 
