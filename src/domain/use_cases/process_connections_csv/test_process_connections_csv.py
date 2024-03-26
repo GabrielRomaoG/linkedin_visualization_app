@@ -11,12 +11,14 @@ import pytest
 class TestConnectionsCsvProcessor(unittest.TestCase):
     def setUp(self):
         self.mocked_connections_repository = MagicMock()
+        self.mocked_os_get_env = MagicMock()
         self.use_case = ConnectionsCsvProcessor(
             connections_repository=self.mocked_connections_repository,
+            os_get_env=self.mocked_os_get_env,
         )
 
     @pytest.fixture(autouse=True)
-    def inject_fixtures(self, caplog):
+    def inject_fixtures(self, caplog: pytest.LogCaptureFixture):
         self._caplog = caplog
 
     def test_error__validate_file_name(self):
@@ -82,12 +84,48 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
             )
             self.use_case._ConnectionsCsvProcessor__connections_repository.bulk_insert_connections.assert_not_called()
 
+    def test__get_env_condition_not_local(self):
+        mocked_file_path = "some/place/Connections.csv"
+        mocked_file_content = (
+            "First Name,Last Name,Company,URL,Email Address,Position,Connected On\n"
+            "John,Doe,MicroTest,www.example.com/johndoe,johndoe@test.com,Tester,01 Jan 2012\n"
+            "Alice,Waht,Testbook,www.lnk.com/alicew,alicew@some.com,Designer,24 Feb 2016"
+        )
+        self.mocked_os_get_env.side_effect = lambda arg: (
+            "web" if arg == "ENVIRONMENT" else None
+        )
+        with patch.object(
+            self.use_case,
+            "_ConnectionsCsvProcessor__open_file",
+            mock_open(read_data=mocked_file_content),
+        ):
+            expected_result = [
+                Connection(
+                    user_name="johndoe",
+                    company="MicroTest",
+                    position="Tester",
+                    connected_on=date(2012, 1, 1),
+                ),
+                Connection(
+                    user_name="alicew",
+                    company="Testbook",
+                    position="Designer",
+                    connected_on=date(2016, 2, 24),
+                ),
+            ]
+            result = self.use_case.process(mocked_file_path)
+            self.use_case._ConnectionsCsvProcessor__connections_repository().bulk_insert_connections.assert_not_called()
+            self.assertEqual(result, expected_result)
+
     def test__process_success(self):
         mocked_file_path = "some/place/Connections.csv"
         mocked_file_content = (
             "First Name,Last Name,Company,URL,Email Address,Position,Connected On\n"
             "John,Doe,MicroTest,www.example.com/johndoe,johndoe@test.com,Tester,01 Jan 2012\n"
             "Alice,Waht,Testbook,www.lnk.com/alicew,alicew@some.com,Designer,24 Feb 2016"
+        )
+        self.mocked_os_get_env.side_effect = lambda arg: (
+            "local" if arg == "ENVIRONMENT" else None
         )
         with patch.object(
             self.use_case,
@@ -108,10 +146,11 @@ class TestConnectionsCsvProcessor(unittest.TestCase):
                     connected_on=date(2016, 2, 24),
                 ),
             ]
-            self.use_case.process(mocked_file_path)
+            result = self.use_case.process(mocked_file_path)
             self.use_case._ConnectionsCsvProcessor__connections_repository().bulk_insert_connections.assert_called_once_with(
                 expected_call_to_bulk_insert_connections
             )
+            self.assertEqual(result, expected_call_to_bulk_insert_connections)
 
     def test_warning_empty_url(self):
         mocked_file_path = "some/place/Connections.csv"

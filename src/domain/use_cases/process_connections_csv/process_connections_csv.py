@@ -8,6 +8,7 @@ from src.domain.models.connection import Connection
 from src.infra.db.repositories.connections.connections_repository import (
     ConnectionsRepository,
 )
+from os import getenv
 
 
 class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
@@ -15,9 +16,11 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
         self,
         connections_repository=ConnectionsRepository,
         open_file_func=open,
+        os_get_env=getenv,
     ):
         self.__connections_repository = connections_repository
         self.__open_file = open_file_func
+        self.__os_get_env = os_get_env
 
     def process(self, file_path: str) -> dict:
         try:
@@ -46,9 +49,12 @@ class ConnectionsCsvProcessor(IConnectionsCsvProcessor):
                         connected_on=connected_on_date,
                     )
                     connections_model_list.append(connection_model)
-                self.__connections_repository().bulk_insert_connections(
-                    connections_model_list
-                )
+
+                if self.__os_get_env("ENVIRONMENT") == "local":
+                    self.__connections_repository().bulk_insert_connections(
+                        connections_model_list
+                    )
+                return connections_model_list
 
         except Exception as e_info:
             logging.error(
